@@ -187,9 +187,11 @@
 require 'rubygems'
 require 'cls'
 require 'values'
-require 'debugger'
+#require 'debugger'
 require 'readline'
 require 'rest-client'
+require 'pry'
+require 'timeout'
 
 # Add the lib dir to the ruby library search path
 $: << File.expand_path(File.dirname(File.realpath(__FILE__))+ '/../lib')
@@ -237,16 +239,16 @@ ensure
   `stty #{state}`
 end
 
-clear_screen
+#clear_screen
 
-for r in 1..9
-  move_cursor(r,r)
-  output r
-end
-puts
+#for r in 1..9
+#  move_cursor(r,r)
+#  output r
+#end
+#puts
 
-puts "Terminal Size:"
-puts "tput:    [#{screen_size.join(', ')}]"
+#puts "Terminal Size:"
+#puts "tput:    [#{screen_size.join(', ')}]"
 # puts "escapes: [#{screen_size_using_escapes.join(', ')}]"
 
 def get_char
@@ -293,10 +295,78 @@ end
 #   exit if c.downcase == 'q'
 # end
 
-username = Readline.readline("username: ")
-password = Readline.readline("password: ")
+#username = Readline.readline("username: ")
+#password = Readline.readline("password: ")
 
-RequestTrackerBase.login(username, password)
+#RequestTrackerBase.login(username, password)
 
-puts RequestTrackerTicket.find(165505)
+#puts RequestTrackerTicket.find(165505)
 
+def bounce
+  clear_screen
+
+  (max_y, max_x) = screen_size
+
+  max_y = max_y.to_i
+  max_x = max_x.to_i
+  
+  x = 45
+  y = 5
+  x_direction = 1
+  y_direction = 1
+
+  counter = 0
+  
+  while true do
+
+    counter = counter + 1
+
+    if counter % 10 == 0 then
+      clear_screen
+
+      (max_y, max_x) = screen_size
+
+      max_y = max_y.to_i
+      max_x = max_x.to_i
+    end
+    
+    status = Timeout::timeout(0.05) {
+#      keypress = get_char
+    }
+  
+    
+    move_cursor(x,y)
+    output ' '
+    
+    if x >= max_x then
+      x = max_x
+      x_direction = -1
+    end
+
+    if y >= max_y then
+      y = max_y
+      y_direction = -1
+    end
+
+    if x == 1 then
+      x_direction = 1
+    end
+
+    if y == 1 then
+      y_direction = 1
+    end
+    
+    x = x + x_direction
+    y = y + y_direction
+    
+    move_cursor(x,y)
+    output '0'
+    move_cursor(1,1)
+    output x.to_s + ' ' + y.to_s  + ' vs ' + max_x.to_s + ' ' + max_y.to_s + ' ' + x_direction.to_s + '     ' 
+
+    sleep 0.1
+
+  end
+end
+
+bounce
