@@ -284,14 +284,16 @@ def bounce
   x_direction = 1
   y_direction = 1
   color = 20
-  sleep_time = 0.09
+  sleep_time = 0.03
 
   counter = 0
 
   debug = nil
 
   tail = Array.new
-  
+
+
+
   while true do
 
     char = char_if_pressed
@@ -300,6 +302,9 @@ def bounce
       if (1..9).include?(char.to_i) then
         sleep_time = char.to_f / 100
       else
+        if char == ' ' then
+          char = "\n"
+        end
         display_char = char
       end
     end
@@ -307,7 +312,7 @@ def bounce
     counter = counter + 1
 
     if counter % 40 == 0 then
-#      clear_screen
+      clear_screen
 
       (max_y, max_x) = screen_size
 
@@ -366,7 +371,7 @@ def bounce
     end
 
     move_cursor(1,1)
-    output x.to_s + ' ' + y.to_s  + ' vs ' + max_x.to_s + ' ' + max_y.to_s + ' ' + x_direction.to_s + ' Color: ' + color.to_s +  ' 1 to 9 for sleep length.  anything else changes display.  Try typing sentences parsed with cr vs space    ' 
+    output x.to_s + ' ' + y.to_s  + ' vs ' + max_x.to_s + ' ' + max_y.to_s + ' ' + x_direction.to_s + ' Color: ' + color.to_s +  ' 1 to 9 for sleep length.  anything else changes display.  Type sentences and words.' 
     sleep sleep_time
 
   end
