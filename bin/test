@@ -259,17 +259,17 @@ ensure
   `stty #{state}`
 end
 
-# require 'io/wait'
-# def char_if_pressed
-#   begin
-#     system("stty raw -echo") # turn raw input on
-#     c = nil
-#     c = $stdin.getc if $stdin.ready?
-#     c.chr if c
-#   ensure
-#     system "stty -raw echo" # turn raw input off
-#   end
-# end
+require 'io/wait'
+def char_if_pressed
+   begin
+     system("stty raw -echo") # turn raw input on
+     c = nil
+     c = $stdin.getc if $stdin.ready?
+     c.chr if c
+   ensure
+     system "stty -raw echo" # turn raw input off
+   end
+end
 
 def foreground_color(index)
   "\e[38;5;#{index}m"
@@ -309,16 +309,31 @@ def bounce
 
   max_y = max_y.to_i
   max_x = max_x.to_i
+  display_char = 'O'
   
   x = 45
   y = 5
   x_direction = 1
   y_direction = 1
+  color = 1
+  sleep_time = 0.09
 
   counter = 0
+
+  debug = nil
   
   while true do
 
+    char = char_if_pressed
+
+    if char then
+      if (1..9).include?(char.to_i) then
+        sleep_time = char.to_f / 100
+      else
+        display_char = char
+      end
+    end
+    
     counter = counter + 1
 
     if counter % 10 == 0 then
@@ -330,13 +345,8 @@ def bounce
       max_x = max_x.to_i
     end
     
-    status = Timeout::timeout(0.05) {
-#      keypress = get_char
-    }
-  
-    
     move_cursor(x,y)
-    output ' '
+    #output ' '
     
     if x >= max_x then
       x = max_x
@@ -360,11 +370,16 @@ def bounce
     y = y + y_direction
     
     move_cursor(x,y)
-    output '0'
+    color = color + 1
+    if color > 255 then
+      color = 1
+    end
+    
+    output foreground_color( color )
+    output display_char
     move_cursor(1,1)
     output x.to_s + ' ' + y.to_s  + ' vs ' + max_x.to_s + ' ' + max_y.to_s + ' ' + x_direction.to_s + '     ' 
-
-    sleep 0.1
+    sleep sleep_time
 
   end
 end
