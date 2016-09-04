@@ -194,9 +194,9 @@ require 'pry'
 require 'timeout'
 
 # Add the lib dir to the ruby library search path
-$: << File.expand_path(File.dirname(File.realpath(__FILE__))+ '/../lib')
-require 'request_tracker_base'
-require 'request_tracker_ticket'
+#$: << File.expand_path(File.dirname(File.realpath(__FILE__))+ '/../lib')
+#require 'request_tracker_base'
+#require 'request_tracker_ticket'
 
 Signal.trap("INT") do
   exit
@@ -239,18 +239,6 @@ ensure
   `stty #{state}`
 end
 
-#clear_screen
-
-#for r in 1..9
-#  move_cursor(r,r)
-#  output r
-#end
-#puts
-
-#puts "Terminal Size:"
-#puts "tput:    [#{screen_size.join(', ')}]"
-# puts "escapes: [#{screen_size_using_escapes.join(', ')}]"
-
 def get_char
   state = `stty -g`
   `stty raw -echo -icanon isig`
@@ -283,25 +271,6 @@ def clear_formatting
   "\e[m"
 end
 
-# i = 0
-# while true
-#   c = get_char
-#   puts "[#{c}]" if c
-#   if c.downcase == 'j'
-#     output foreground_color(i) + i.to_s + clear_formatting + background_color(i) + " " + i.to_s + " " + clear_formatting + " "
-#     i += 1
-#     i=0 if i > 255
-#   end
-#   exit if c.downcase == 'q'
-# end
-
-#username = Readline.readline("username: ")
-#password = Readline.readline("password: ")
-
-#RequestTrackerBase.login(username, password)
-
-#puts RequestTrackerTicket.find(165505)
-
 def bounce
   clear_screen
 
@@ -310,7 +279,8 @@ def bounce
   max_y = max_y.to_i
   max_x = max_x.to_i
   display_char = 'O'
-  
+
+  max_tail = 30
   x = 45
   y = 5
   x_direction = 1
@@ -321,6 +291,8 @@ def bounce
   counter = 0
 
   debug = nil
+
+  tail = Array.new
   
   while true do
 
@@ -374,9 +346,26 @@ def bounce
     if color > 255 then
       color = 1
     end
-    
-    output foreground_color( color )
-    output display_char
+
+    segment = Hash.new
+    segment['x'] = x
+    segment['y'] = y
+    segment['color'] = color
+
+    tail.unshift( segment )
+
+    if tail.length > max_tail then
+      end_segment = tail.pop
+      move_cursor( end_segment['x'], end_segment['y'] )
+      output ' '
+    end
+
+    tail.each do |segment|
+      move_cursor( segment['x'], segment['y'])
+      output foreground_color( segment['color'] )
+      output display_char
+    end
+
     move_cursor(1,1)
     output x.to_s + ' ' + y.to_s  + ' vs ' + max_x.to_s + ' ' + max_y.to_s + ' ' + x_direction.to_s + '     ' 
     sleep sleep_time
