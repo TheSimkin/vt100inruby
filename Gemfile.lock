@@ -3,14 +3,6 @@ GEM
   specs:
     awesome_print (1.1.0)
     cls (0.0.3)
-    columnize (0.3.6)
-    debugger (1.4.0)
-      columnize (>= 0.3.1)
-      debugger-linecache (~> 1.1.1)
-      debugger-ruby_core_source (~> 1.2.0)
-    debugger-linecache (1.1.2)
-      debugger-ruby_core_source (>= 1.1.1)
-    debugger-ruby_core_source (1.2.0)
     highline (1.6.15)
     mime-types (1.21)
     rest-client (1.6.7)
@@ -23,7 +15,6 @@ PLATFORMS
 DEPENDENCIES
   awesome_print
   cls (~> 0.0.3)
-  debugger
   highline
   rest-client
   values (~> 1.5.0)
