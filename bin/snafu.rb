@@ -292,6 +292,7 @@ def bounce
 
   counter = 0
 
+
   debug = nil
 
   move_cursor(1,1)
@@ -377,15 +378,130 @@ def bounce
 end
 
 class Player
-  def initialize
+  def initialize( player_name )
+    @@color ||= 10
+
+    @@color = @@color + 10
+
+    @player_name = player_name
     @display_char = 'O'
     @max_tail = 30
-    @x = 45
-    @y = 5
+    @color = @@color
+    @tail = Array.new
+
+    (max_y, max_x) = screen_size
+
+    @max_y = max_y.to_i
+    @max_x = max_x.to_i
+
+    @x = rand(@max_x)
+    @y = rand(@max_y)
+    @x_direction = rand(1)-1
+    @y_direction = rand(1)-1
+
+    @auto_play = true
+  end
+
+  def direction_up
     @x_direction = 0
     @y_direction = 1
-    @color = 20
-    @tail = Array.new
+  end
+
+  def direction_down
+    @x_direction = 0
+    @y_direction = -1
+  end
+
+  def direction_left
+    @x_direction = -1
+    @y_direction = 0
+  end
+
+  def direction_right
+    @x_direction = 1
+    @y_direction = 0
+  end
+
+
+  def dead!
+    print "Player " + @player_name + " died"
+    abort
+  end
+
+  def move!    
+    @x = @x + @x_direction
+    @y = @y + @y_direction
+
+    segment = Hash.new
+    segment['x'] = @x
+    segment['y'] = @y
+    segment['color'] = @color
+    segment['display_char'] = @display_char
+
+    @tail.unshift( segment )
+
+    if @tail.length > @max_tail then
+      eat_segment
+    end
+
+  end
+
+  def eat_segment
+    end_segment = @tail.pop
+    move_cursor( end_segment['x'], end_segment['y'] )
+    output ' '
+  end
+
+  def dead?
+    if @x >= @max_x then
+      if @auto_play
+        self.direction_down
+      else
+        self.dead!
+      end
+    end
+
+    if @y >= @max_y then
+      if @auto_play
+        self.direction_left
+      else
+        self.dead!
+      end
+    end
+
+    if @x == 1 then
+      if @auto_play
+        self.direction_up
+      else
+        self.dead!
+      end
+    end
+
+    if @y == 1 then
+      if @auto_play
+        self.direction_right
+      else
+        self.dead!
+      end
+    end
+  end
+
+  def take_turn
+    move!
+
+    dead?
+
+    draw_tail
+
+    move_cursor(1,1)
+  end
+
+  def draw_tail
+    @tail.each do |segment|
+      move_cursor( segment['x'], segment['y'])
+      output foreground_color( segment['color'] )
+      output segment['display_char']
+    end
   end
 end
 
@@ -402,14 +518,66 @@ end
 
 class Snafu
   def initialize
-    @player = Player.new
+    @player = []
+    @player.unshift( Player.new( "Player1") )
+    @player.unshift( Player.new( "Player2" ) )
+
     @display = Display.new
 
+    @sleep_time = 0.02
 
+    @counter = 0
+
+    (max_y, max_x) = screen_size
+
+    @max_y = max_y.to_i
+    @max_x = max_x.to_i
+  end
+
+  def turn
+    output background_color(0)
+
+    char = char_if_pressed
+
+    if char then
+      if (1..9).include?(char.to_i) then
+        @sleep_time = char.to_f / 100
+      else
+        @display_char = char
+      end
+    end
+    
+    @counter = @counter + 1
+
+    if @counter % 40 == 0 then
+      (temp_y, temp_x) = screen_size
+
+      if ( temp_y != @max_y or temp_x != @max_x )
+        clear_screen
+        @max_y = temp_y.to_i
+        @max_x = temp_x.to_i
+      end
+    end
+
+    @player.each do | player |
+      player.take_turn
+    end
+
+    sleep @sleep_time
+
+    if ( @counter > 500 )
+      return false
+    end
+    return true
   end
 end
 
 snafu = Snafu.new
 
+while snafu.turn
+
+end
+
+print "NOBODY DIED. BORING"
 
 #bounce
