@@ -396,8 +396,8 @@ class Player
 
     @x = rand(@max_x)
     @y = rand(@max_y)
-    @x_direction = rand(1)-1
-    @y_direction = rand(1)-1
+    @x_direction = 0
+    @y_direction = [1, -1].sample
 
     @auto_play = true
   end
@@ -454,37 +454,40 @@ class Player
 
   def dead?
     if @x >= @max_x then
-      if @auto_play
-        self.direction_down
-      else
         self.dead!
-      end
     end
 
     if @y >= @max_y then
-      if @auto_play
-        self.direction_left
-      else
-        self.dead!
-      end
+      self.dead!
     end
 
     if @x == 1 then
-      if @auto_play
-        self.direction_up
-      else
         self.dead!
-      end
     end
 
     if @y == 1 then
-      if @auto_play
+      self.dead!
+    end
+
+    if @auto_play then
+      if @x + @x_direction  >= @max_x then
+        self.direction_left
+      end
+
+      if @y + @y_direction >= @max_y then
+       self.direction_down
+      end
+
+      if @x + @x_direction == 1 then
+        self.direction_up
+      end
+
+      if @y + @y_direction == 1 then
         self.direction_right
-      else
-        self.dead!
       end
     end
   end
+
 
   def take_turn
     move!
