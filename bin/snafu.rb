@@ -295,8 +295,8 @@ def bounce
   debug = nil
 
   move_cursor(1,1)
-  output x.to_s + ' ' + y.to_s  + ' vs ' + max_x.to_s + ' ' + max_y.to_s + ' ' + x_direction.to_s + ' Color: ' + color.to_s +  ' 1 to 9 for sleep length.  anything else changes display.  Try typing sentences parsed with cr vs space    ' 
-  
+  output x.to_s + ' ' + y.to_s  + ' vs ' + max_x.to_s + ' ' + max_y.to_s + ' ' + x_direction.to_s + ' Color: ' + color.to_s +  ' 1 to 9 for sleep length.  anything else changes display.  Try typing sentences parsed with cr vs space    '
+
   while true do
     output background_color(0)
 
@@ -400,9 +400,16 @@ class Display
   end
 end
 
-player = Player.new
-display = Display.new
+class Snafu
+  def initialize
+    @player = Player.new
+    @display = Display.new
 
+
+  end
+end
+
+snafu = Snafu.new
 
 
 #bounce
