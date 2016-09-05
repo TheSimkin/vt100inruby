@@ -276,21 +276,23 @@ def bounce
 
   max_y = max_y.to_i
   max_x = max_x.to_i
-  display_char = 'O'
 
+
+  display_char = 'O'
   max_tail = 30
   x = 45
   y = 5
   x_direction = 1
   y_direction = 1
   color = 20
+  tail = Array.new
+
+
   sleep_time = 0.09
 
   counter = 0
 
   debug = nil
-
-  tail = Array.new
 
   move_cursor(1,1)
   output x.to_s + ' ' + y.to_s  + ' vs ' + max_x.to_s + ' ' + max_y.to_s + ' ' + x_direction.to_s + ' Color: ' + color.to_s +  ' 1 to 9 for sleep length.  anything else changes display.  Try typing sentences parsed with cr vs space    ' 
@@ -374,4 +376,33 @@ def bounce
   end
 end
 
-bounce
+class Player
+  def initialize
+    @display_char = 'O'
+    @max_tail = 30
+    @x = 45
+    @y = 5
+    @x_direction = 0
+    @y_direction = 1
+    @color = 20
+    @tail = Array.new
+  end
+end
+
+class Display
+  def initialize
+    clear_screen
+
+    (max_y, max_x) = screen_size
+
+    @max_y = max_y.to_i
+    @max_x = max_x.to_i
+  end
+end
+
+player = Player.new
+display = Display.new
+
+
+
+#bounce
